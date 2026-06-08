@@ -1,0 +1,13 @@
+{
+  "/page": "app/page.js",
+  "/login/page": "app/login/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/applications/route": "app/api/applications/route.js",
+  "/api/interviews/route": "app/api/interviews/route.js",
+  "/api/contacts/route": "app/api/contacts/route.js",
+  "/(app)/contacts/page": "app/(app)/contacts/page.js",
+  "/(app)/interviews/page": "app/(app)/interviews/page.js",
+  "/(app)/stats/page": "app/(app)/stats/page.js",
+  "/(app)/dashboard/page": "app/(app)/dashboard/page.js",
+  "/(app)/ai/page": "app/(app)/ai/page.js"
+}
