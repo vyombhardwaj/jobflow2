@@ -24,7 +24,7 @@ export function Sidebar() {
   const initials = (session?.user?.name ?? "J").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
 
   return (
-    <aside className="fixed inset-y-0 left-0 w-56 bg-white border-r border-neutral-200 flex flex-col z-30">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-56 flex-col border-r border-neutral-200 bg-white md:flex">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-neutral-100">
         <div className="w-7 h-7 bg-neutral-900 rounded-lg flex items-center justify-center">
