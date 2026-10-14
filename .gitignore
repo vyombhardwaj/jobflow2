@@ -1,10 +1,22 @@
+# dependencies
 node_modules/
+
+# next.js
 .next/
-node_modules/
+out/
+
+# env files (keep .env.example tracked)
 .env
 .env.local
-d proj.env
+.env.*.local
+
+# os / editor
 .DS_Store
+.vscode/
+
+# build info
 tsconfig.tsbuildinfo
+
+# local databases
 *.db
-.env
+*.db-journal
