@@ -20,6 +20,10 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = (session.user as any).id as string;
   const { name, title, email, linkedin, notes, applicationId } = await req.json();
+  if (applicationId) {
+    const application = await prisma.application.findFirst({ where: { id: applicationId, userId } });
+    if (!application) return NextResponse.json({ error: "Application not found" }, { status: 404 });
+  }
   const contact = await prisma.contact.create({
     data: {
       name, title: title || null, email: email || null,

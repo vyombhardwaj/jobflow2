@@ -1,8 +1,9 @@
 // app/(app)/applications/page.tsx
 "use client";
 import { useEffect, useState } from "react";
-import { Plus, Trash2, ExternalLink, Briefcase, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Briefcase, Loader2, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { formatDate, cn } from "@/lib/utils";
+import { JobImport } from "@/components/applications/JobImport";
 
 type Application = {
   id: string; company: string; role: string; location?: string;
@@ -37,10 +38,18 @@ export default function ApplicationsPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [filter, setFilter] = useState("all");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     fetch("/api/applications").then(r => r.json()).then(setApps).finally(() => setLoading(false));
   }, []);
+
+  async function refreshApplications() {
+    const response = await fetch("/api/applications");
+    if (!response.ok) throw new Error("Application was saved, but the list could not be refreshed.");
+    setApps(await response.json());
+    setImporting(false);
+  }
 
   async function addApp(e: React.FormEvent) {
     e.preventDefault(); setSaving(true);
@@ -75,10 +84,17 @@ export default function ApplicationsPage() {
           <h1>Applications</h1>
           <p className="text-neutral-500 mt-1">Track every job you have applied to.</p>
         </div>
-        <button className="btn-primary" onClick={() => setAdding(a => !a)}>
-          <Plus className="w-4 h-4" /> Add application
-        </button>
+        <div className="flex flex-wrap justify-end gap-2">
+          <button className="btn-secondary" onClick={() => { setImporting(true); setAdding(false); }}>
+            <Sparkles className="w-4 h-4" /> Create from description
+          </button>
+          <button className="btn-primary" onClick={() => { setAdding(a => !a); setImporting(false); }}>
+            <Plus className="w-4 h-4" /> Add application
+          </button>
+        </div>
       </div>
+
+      {importing && <JobImport onClose={() => setImporting(false)} onCreated={refreshApplications} />}
 
       <div className="flex gap-1.5 flex-wrap">
         {["all", ...STATUSES].map(s => (

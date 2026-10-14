@@ -6,6 +6,7 @@ import { formatDate, daysUntil } from "@/lib/utils";
 import { Briefcase, Calendar, Target, TrendingUp, ChevronRight, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { JobTools } from "@/components/dashboard/JobTools";
 
 const STATUS_COLOR: Record<string, string> = {
   wishlist:  "bg-neutral-100 text-neutral-600",
@@ -57,6 +58,8 @@ export default async function DashboardPage() {
         <h1>Good morning, {session?.user?.name?.split(" ")[0]} 👋</h1>
         <p className="text-neutral-500 mt-1">Here's your job search overview.</p>
       </div>
+
+      <JobTools />
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

@@ -12,7 +12,11 @@ model User {
   id            String        @id @default(cuid())
   name          String?
   email         String        @unique
+  passwordHash  String?
+  sessionVersion Int           @default(0)
   emailVerified DateTime?
+  emailOtpHash  String?
+  emailOtpExpires DateTime?
   image         String?
   createdAt     DateTime      @default(now())
   accounts      Account[]
@@ -21,6 +25,24 @@ model User {
   contacts      Contact[]
   interviews    Interview[]
   notes         AppNote[]
+}
+
+model PendingSignup {
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  passwordHash    String
+  emailOtpHash    String
+  emailOtpExpires DateTime
+  createdAt       DateTime @default(now())
+}
+
+model PasswordReset {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  otpHash         String
+  otpExpires      DateTime
+  createdAt       DateTime @default(now())
 }
 
 model Account {

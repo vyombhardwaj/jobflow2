@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { Sparkles, Loader2, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { JobReview } from "@/components/ai/JobReview";
 
 type Application = { id: string; company: string; role: string; description?: string };
 
 export default function AiPage() {
   const [applications, setApplications] = useState<Application[]>([]);
-  const [tab, setTab] = useState<"coverletter" | "interviewprep">("coverletter");
+  const [tab, setTab] = useState<"coverletter" | "interviewprep" | "ats">("coverletter");
 
   // Cover letter state
   const [clForm, setClForm] = useState({ applicationId: "", background: "", tone: "professional" });
@@ -75,13 +76,14 @@ export default function AiPage() {
     <div className="space-y-6">
       <div>
         <h1>AI Assistant</h1>
-        <p className="text-neutral-500 mt-1">Generate cover letters and prepare for interviews with AI.</p>
+        <p className="text-neutral-500 mt-1">AI uses your configured Google Gemini API key to help with job applications. Check your resume, import job details, generate cover letters, and prepare for interviews.</p>
       </div>
 
       <div className="flex gap-1 bg-neutral-100 rounded-xl p-1 w-fit">
         {([
           { key: "coverletter",  label: "Cover Letter" },
           { key: "interviewprep", label: "Interview Prep" },
+          { key: "ats", label: "Resume ATS check" },
         ] as const).map(({ key, label }) => (
           <button key={key} onClick={() => setTab(key)}
             className={cn("px-4 py-1.5 rounded-lg text-sm font-medium transition-all",
@@ -185,8 +187,11 @@ export default function AiPage() {
               <pre className="text-sm text-neutral-700 whitespace-pre-wrap font-sans leading-relaxed">{prepContent}</pre>
             </div>
           )}
+
         </div>
       )}
+
+      {tab === "ats" && <JobReview />}
     </div>
   );
 }

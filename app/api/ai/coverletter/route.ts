@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { generateWithGemini, isGeminiConfigured } from "@/lib/ai";
 
 function fallbackCoverLetter(app: { company: string; role: string; location?: string | null; description?: string | null }, background: string, tone: string) {
   const company = app.company || "the company";
@@ -14,17 +12,15 @@ function fallbackCoverLetter(app: { company: string; role: string; location?: st
 }
 
 export async function POST(req: NextRequest) {
-  const hasRealKey = Boolean(process.env.ANTHROPIC_API_KEY) && process.env.ANTHROPIC_API_KEY !== "your-anthropic-api-key";
-  if (!hasRealKey) {
-    const { applicationId, background, tone } = await req.json();
-    const app = await prisma.application.findUnique({ where: { id: applicationId } });
-    if (!app) return NextResponse.json({ error: "Application not found" }, { status: 404 });
-    return NextResponse.json({ coverLetter: fallbackCoverLetter(app, background, tone) });
-  }
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = (session.user as any).id as string;
-
+  if (!isGeminiConfigured()) {
+    const { applicationId, background, tone } = await req.json();
+    const app = await prisma.application.findUnique({ where: { id: applicationId, userId } });
+    if (!app) return NextResponse.json({ error: "Application not found" }, { status: 404 });
+    return NextResponse.json({ coverLetter: fallbackCoverLetter(app, background, tone) });
+  }
   const { applicationId, background, tone } = await req.json();
 
   const app = await prisma.application.findUnique({ where: { id: applicationId, userId } });
@@ -46,13 +42,7 @@ Write a complete, ready-to-send cover letter. Start directly with "Dear Hiring M
 Do not include any meta-commentary, just the letter itself. Keep it to 3-4 paragraphs.`;
 
   try {
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    const coverLetter = (message.content[0] as any).text as string;
+    const coverLetter = await generateWithGemini(prompt, { maxOutputTokens: 1000 });
     return NextResponse.json({ coverLetter });
   } catch (error) {
     console.error("Cover letter generation failed", error);

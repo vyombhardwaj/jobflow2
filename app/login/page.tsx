@@ -3,20 +3,49 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Briefcase, Target, Bell, BarChart2, Sparkles } from "lucide-react";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [name, setName]   = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const res = await signIn("credentials", { email, name, redirect: false });
-    if (res?.ok) router.push("/dashboard");
-    setLoading(false);
+    setError("");
+    try {
+      if (/^\d{6}$/.test(password)) {
+        const response = await fetch("/api/admin/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: email, code: password }),
+        });
+        if (response.ok) {
+          router.push("/admin");
+          return;
+        }
+        setError("Unable to sign in. Check your account credentials and try again.");
+        return;
+      }
+
+      const res = await signIn("credentials", { email, name, password, redirect: false });
+      if (res?.ok) {
+        await fetch("/api/admin/auth", { method: "DELETE" });
+        router.push("/dashboard");
+      } else {
+        setError("Unable to sign in. Check your email and password and try again.");
+      }
+    } catch {
+      setError("Unable to sign in right now. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -32,7 +61,7 @@ export default function LoginPage() {
 
         <div>
           <p className="text-4xl font-semibold leading-tight mb-6">
-            Land your dream job.<br />Stay organised.
+            Land your dream job.<br />Stay organized.
           </p>
           <p className="text-neutral-400 text-lg mb-12">
             Track every application, ace every interview, and never miss a follow-up again.
@@ -53,7 +82,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="text-neutral-600 text-sm">Built with Next.js, Claude AI &amp; Prisma</p>
+        <p className="text-neutral-600 text-sm">Built with Next.js, Gemini AI &amp; Prisma</p>
       </div>
 
       {/* Right — login form */}
@@ -65,38 +94,46 @@ export default function LoginPage() {
           </div>
 
           <h1 className="text-2xl font-semibold mb-1">Welcome back</h1>
-          <p className="text-neutral-500 text-sm mb-8">Enter your details to get started</p>
+          <p className="text-neutral-500 text-sm mb-8">Sign in to your JobFlow account</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1.5">Name</label>
-              <input
-                className="input"
-                placeholder="Your name"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                required
-              />
-            </div>
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-1.5">Email</label>
               <input
                 className="input"
-                type="email"
-                placeholder="you@example.com"
+                type="text"
+                autoComplete="username"
+                placeholder="Email address"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1.5">Password</label>
+              <PasswordInput
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                minLength={6}
+                maxLength={128}
+                required
+              />
+            </div>
+            {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
+            <div className="text-right">
+              <Link href="/forgot-password" className="text-sm text-neutral-500 hover:text-neutral-900 hover:underline">Forgot password?</Link>
             </div>
             <button className="btn-primary w-full justify-center mt-2" disabled={loading}>
               {loading ? "Signing in…" : "Get started"}
             </button>
           </form>
 
-          <p className="text-xs text-neutral-400 mt-6 text-center">
-            No password required — just your email for this demo.
+          <p className="text-sm text-neutral-500 mt-6 text-center">
+            Need an account? <Link href="/signup" className="font-medium text-neutral-900 hover:underline">Sign up</Link>
           </p>
+
         </div>
       </div>
     </div>

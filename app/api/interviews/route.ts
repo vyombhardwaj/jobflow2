@@ -9,7 +9,7 @@ export async function GET() {
   const userId = (session.user as any).id as string;
   const interviews = await prisma.interview.findMany({
     where: { userId },
-    include: { application: { select: { company: true, role: true } } },
+    include: { application: { select: { id: true, company: true, role: true, description: true } } },
     orderBy: { scheduledAt: "asc" },
   });
   return NextResponse.json(interviews);
@@ -20,6 +20,8 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = (session.user as any).id as string;
   const { applicationId, type, scheduledAt, duration, notes } = await req.json();
+  const application = await prisma.application.findFirst({ where: { id: applicationId, userId } });
+  if (!application) return NextResponse.json({ error: "Application not found" }, { status: 404 });
   const iv = await prisma.interview.create({
     data: {
       applicationId, type,

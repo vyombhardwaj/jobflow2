@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { generateWithGemini, isGeminiConfigured } from "@/lib/ai";
 
 function fallbackPrepGuide(app: { company: string; role: string; description?: string | null }, focusArea: string, extraContext: string) {
   const company = app.company || "the company";
@@ -13,17 +11,15 @@ function fallbackPrepGuide(app: { company: string; role: string; description?: s
 }
 
 export async function POST(req: NextRequest) {
-  const hasRealKey = Boolean(process.env.ANTHROPIC_API_KEY) && process.env.ANTHROPIC_API_KEY !== "your-anthropic-api-key";
-  if (!hasRealKey) {
-    const { applicationId, focusArea, extraContext } = await req.json();
-    const app = await prisma.application.findUnique({ where: { id: applicationId } });
-    if (!app) return NextResponse.json({ error: "Application not found" }, { status: 404 });
-    return NextResponse.json({ prep: fallbackPrepGuide(app, focusArea, extraContext) });
-  }
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = (session.user as any).id as string;
-
+  if (!isGeminiConfigured()) {
+    const { applicationId, focusArea, extraContext } = await req.json();
+    const app = await prisma.application.findUnique({ where: { id: applicationId, userId } });
+    if (!app) return NextResponse.json({ error: "Application not found" }, { status: 404 });
+    return NextResponse.json({ prep: fallbackPrepGuide(app, focusArea, extraContext) });
+  }
   const { applicationId, focusArea, extraContext } = await req.json();
 
   const app = await prisma.application.findUnique({ where: { id: applicationId, userId } });
@@ -47,13 +43,7 @@ Provide:
 Format clearly with sections and bullet points. Be specific to the role and company.`;
 
   try {
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1500,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    const prep = (message.content[0] as any).text as string;
+    const prep = await generateWithGemini(prompt, { maxOutputTokens: 1500 });
     return NextResponse.json({ prep });
   } catch (error) {
     console.error("Interview prep generation failed", error);

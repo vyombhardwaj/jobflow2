@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: file:/app/data/jobflow.db
+      NODE_ENV: production
+    volumes:
+      - jobflow-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  jobflow-data:

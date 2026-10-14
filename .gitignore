@@ -4,3 +4,7 @@ node_modules/
 .env
 .env.local
 d proj.env
+.DS_Store
+tsconfig.tsbuildinfo
+*.db
+.env
