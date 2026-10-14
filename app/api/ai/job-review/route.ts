@@ -4,7 +4,7 @@ import mammoth from "mammoth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateWithGemini, isGeminiConfigured } from "@/lib/ai";
+import { generateWithGemini, getGeminiServiceFailure, isGeminiConfigured } from "@/lib/ai";
 
 export const runtime = "nodejs";
 
@@ -122,6 +122,10 @@ ${jobDescription}`,
     return NextResponse.json({ ...parsed, jobLabel: savedJobLabel || null });
   } catch (error) {
     console.error("AI resume ATS check failed", error);
-    return NextResponse.json({ error: "Unable to analyze this resume and job description. Please try again." }, { status: 500 });
+    const serviceFailure = getGeminiServiceFailure(error);
+    return NextResponse.json(
+      { error: serviceFailure?.message ?? "Unable to analyze this resume and job description. Please try again." },
+      { status: serviceFailure?.status ?? 500 },
+    );
   }
 }

@@ -1,5 +1,6 @@
 // app/(app)/dashboard/page.tsx
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatDate, daysUntil } from "@/lib/utils";
@@ -7,6 +8,7 @@ import { Briefcase, Calendar, Target, TrendingUp, ChevronRight, AlertCircle } fr
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { JobTools } from "@/components/dashboard/JobTools";
+import { DashboardWelcome } from "@/components/dashboard/DashboardWelcome";
 
 const STATUS_COLOR: Record<string, string> = {
   wishlist:  "bg-neutral-100 text-neutral-600",
@@ -20,7 +22,8 @@ const STATUS_COLOR: Record<string, string> = {
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  const userId  = (session!.user as any).id as string;
+  if (!session?.user) redirect("/login");
+  const userId  = (session.user as any).id as string;
 
   const [applications, upcomingInterviews] = await Promise.all([
     prisma.application.findMany({
@@ -54,10 +57,14 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1>Good morning, {session?.user?.name?.split(" ")[0]} 👋</h1>
-        <p className="text-neutral-500 mt-1">Here's your job search overview.</p>
-      </div>
+      <DashboardWelcome
+        name={session?.user?.name?.split(" ")[0] ?? "there"}
+        date={new Intl.DateTimeFormat("en-US", {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+        }).format(new Date())}
+      />
 
       <JobTools />
 
@@ -143,7 +150,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick actions */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
         {[
           { href: "/applications", label: "Add application", emoji: "➕" },
           { href: "/ai",           label: "Generate cover letter", emoji: "✍️" },

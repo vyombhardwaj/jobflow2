@@ -37,7 +37,7 @@ function ResetPasswordForm() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-50 flex items-center justify-center p-8">
+    <main className="flex min-h-screen min-w-0 items-center justify-center bg-neutral-50 px-5 py-8 sm:p-8">
       <div className="w-full max-w-sm">
         <div className="flex items-center gap-2 mb-8"><Briefcase className="w-5 h-5" /><span className="font-semibold">JobFlow</span></div>
         <h1 className="text-2xl font-semibold mb-1">Reset password</h1>

@@ -217,7 +217,7 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-[2rem] bg-neutral-950 p-6 text-white shadow-xl shadow-neutral-900/10 sm:p-9">
+      <section className="relative overflow-hidden rounded-3xl bg-neutral-950 p-5 text-white shadow-xl shadow-neutral-900/10 sm:rounded-[2rem] sm:p-9">
         <div className="pointer-events-none absolute -right-16 -top-32 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-8rem] right-1/3 h-72 w-72 rounded-full bg-fuchsia-500/10 blur-3xl" />
         <div className="relative flex flex-wrap items-start justify-between gap-6">
@@ -225,7 +225,7 @@ export default function AdminPage() {
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 text-xs font-medium text-emerald-200">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" /> OWNER CONTROL ROOM
             </div>
-            <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Platform overview</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-4xl">Platform overview</h1>
             <p className="mt-2 text-sm text-neutral-400">A live snapshot of your job search community and platform activity.</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -237,7 +237,7 @@ export default function AdminPage() {
             </button>
           </div>
         </div>
-        <div className="relative mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-4 text-xs text-neutral-500">
+        <div className="relative mt-8 flex flex-col items-start gap-2 border-t border-white/10 pt-4 text-xs text-neutral-500 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6">
           <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-violet-300" /> Owner-only analytics</span>
           <span className="inline-flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5" /> Updated {formatDate(overview.refreshedAt, { hour: "numeric", minute: "2-digit" })}</span>
           <span className="inline-flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-amber-200" /> Personal application details stay private</span>

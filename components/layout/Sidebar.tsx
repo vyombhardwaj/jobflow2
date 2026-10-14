@@ -2,7 +2,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import {
   LayoutDashboard, Briefcase, Calendar, Users,
@@ -27,9 +27,23 @@ export function Sidebar() {
 
   const closeMobileMenu = () => setMobileOpen(false);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMobileMenu();
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [mobileOpen]);
+
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-neutral-200 bg-white px-4 md:hidden">
+      <div className="fixed inset-x-0 top-0 z-40 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center justify-between border-b border-neutral-200 bg-white px-4 pt-[env(safe-area-inset-top)] lg:hidden">
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 bg-neutral-900 rounded-lg flex items-center justify-center">
             <Briefcase className="w-4 h-4 text-white" />
@@ -46,7 +60,7 @@ export function Sidebar() {
         </button>
       </div>
 
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-56 flex-col border-r border-neutral-200 bg-white md:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-neutral-200 bg-white lg:flex">
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-neutral-100">
           <div className="w-7 h-7 bg-neutral-900 rounded-lg flex items-center justify-center">
@@ -91,9 +105,9 @@ export function Sidebar() {
       </aside>
 
       {mobileOpen ? (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <div className="absolute inset-0 bg-black/30" onClick={closeMobileMenu} />
-          <div className="relative flex h-full w-[80vw] max-w-xs flex-col border-r border-neutral-200 bg-white shadow-2xl">
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button type="button" className="absolute inset-0 h-full w-full bg-black/30" onClick={closeMobileMenu} aria-label="Close navigation" />
+          <div className="relative flex h-full w-[min(20rem,88vw)] flex-col border-r border-neutral-200 bg-white shadow-2xl">
             <div className="flex items-center justify-between gap-3 border-b border-neutral-100 px-4 py-5">
               <div className="flex items-center gap-3">
                 <div className="w-7 h-7 bg-neutral-900 rounded-lg flex items-center justify-center">

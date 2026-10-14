@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateWithGemini, isGeminiConfigured } from "@/lib/ai";
+import { generateWithGemini, getGeminiServiceFailure, isGeminiConfigured } from "@/lib/ai";
 
 function fallbackCoverLetter(app: { company: string; role: string; location?: string | null; description?: string | null }, background: string, tone: string) {
   const company = app.company || "the company";
@@ -46,6 +46,10 @@ Do not include any meta-commentary, just the letter itself. Keep it to 3-4 parag
     return NextResponse.json({ coverLetter });
   } catch (error) {
     console.error("Cover letter generation failed", error);
-    return NextResponse.json({ error: "Failed to generate cover letter. Please check your AI configuration." }, { status: 500 });
+    const serviceFailure = getGeminiServiceFailure(error);
+    return NextResponse.json(
+      { error: serviceFailure?.message ?? "Failed to generate cover letter. Please check your AI configuration." },
+      { status: serviceFailure?.status ?? 500 },
+    );
   }
 }

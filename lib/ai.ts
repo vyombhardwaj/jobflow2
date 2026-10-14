@@ -1,6 +1,20 @@
 import { GoogleGenAI, type GenerateContentConfig } from "@google/genai";
 
-const DEFAULT_MODEL = "gemini-2.5-flash";
+const DEFAULT_MODEL = "gemini-3.5-flash-lite";
+
+export function getGeminiServiceFailure(error: unknown) {
+  if (!error || typeof error !== "object" || !("status" in error) || typeof error.status !== "number") {
+    return null;
+  }
+
+  if (error.status === 429) {
+    return { status: 429, message: "Gemini is rate-limited right now. Please wait a moment and try again." };
+  }
+  if (error.status === 503) {
+    return { status: 503, message: "Gemini is temporarily busy. Please try again shortly." };
+  }
+  return null;
+}
 
 export function isGeminiConfigured() {
   const apiKey = process.env.GEMINI_API_KEY?.trim();

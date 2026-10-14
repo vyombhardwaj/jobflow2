@@ -45,7 +45,7 @@ export default function ContactsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1>Contacts</h1>
           <p className="text-neutral-500 mt-1">Recruiters, hiring managers, and network connections.</p>
@@ -59,7 +59,7 @@ export default function ContactsPage() {
         <div className="card border-neutral-300">
           <h3 className="mb-4">New contact</h3>
           <form onSubmit={addContact} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium mb-1.5">Name</label>
                 <input className="input" placeholder="Full name" required
@@ -71,7 +71,7 @@ export default function ContactsPage() {
                   value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium mb-1.5">Email</label>
                 <input className="input" type="email" placeholder="name@company.com"
@@ -127,19 +127,19 @@ export default function ContactsPage() {
                 )}
                 <div className="flex gap-3 mt-2">
                   {c.email && (
-                    <a href={`mailto:${c.email}`} className="text-neutral-300 hover:text-blue-400">
+                    <a href={`mailto:${c.email}`} aria-label={`Email ${c.name}`} className="inline-flex min-h-11 min-w-11 items-center justify-center text-neutral-300 hover:text-blue-400">
                       <Mail className="w-4 h-4" />
                     </a>
                   )}
                   {c.linkedin && (
-                    <a href={c.linkedin} target="_blank" rel="noopener noreferrer" className="text-neutral-300 hover:text-blue-600">
+                    <a href={c.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`${c.name} on LinkedIn`} className="inline-flex min-h-11 min-w-11 items-center justify-center text-neutral-300 hover:text-blue-600">
                       <Linkedin className="w-4 h-4" />
                     </a>
                   )}
                 </div>
                 {c.notes && <p className="text-xs text-neutral-400 mt-2">{c.notes}</p>}
               </div>
-              <button onClick={() => remove(c.id)} className="text-neutral-200 hover:text-red-400 shrink-0">
+              <button type="button" aria-label={`Delete ${c.name}`} onClick={() => remove(c.id)} className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center text-neutral-200 hover:text-red-400">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>

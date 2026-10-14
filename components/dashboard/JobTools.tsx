@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight, FileText, ScanSearch, Sparkles, X } from "lucide-react";
 import { JobImport } from "@/components/applications/JobImport";
@@ -13,6 +13,20 @@ export function JobTools() {
     setActiveTool(null);
     router.refresh();
   }
+
+  useEffect(() => {
+    if (!activeTool) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActiveTool(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [activeTool]);
 
   return (
     <>
@@ -29,7 +43,7 @@ export function JobTools() {
           <button
             type="button"
             onClick={() => setActiveTool("import")}
-            className="group relative overflow-hidden rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-900/5 focus:outline-none focus:ring-2 focus:ring-violet-400"
+            className="card group relative overflow-hidden border-violet-100 bg-gradient-to-br from-violet-50 via-white to-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-900/5 focus:outline-none focus:ring-2 focus:ring-violet-400"
           >
             <div className="absolute -right-8 -top-12 h-36 w-36 rounded-full bg-violet-100/70 blur-2xl transition group-hover:bg-violet-200/70" />
             <div className="relative flex items-start justify-between gap-4">
@@ -48,7 +62,7 @@ export function JobTools() {
           <button
             type="button"
             onClick={() => setActiveTool("ats")}
-            className="group relative overflow-hidden rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lg hover:shadow-sky-900/5 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            className="card group relative overflow-hidden border-sky-100 bg-gradient-to-br from-sky-50 via-white to-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lg hover:shadow-sky-900/5 focus:outline-none focus:ring-2 focus:ring-sky-400"
           >
             <div className="absolute -right-8 -top-12 h-36 w-36 rounded-full bg-sky-100/70 blur-2xl transition group-hover:bg-sky-200/70" />
             <div className="relative flex items-start justify-between gap-4">
@@ -69,7 +83,7 @@ export function JobTools() {
       {activeTool === "import" && <JobImport onClose={() => setActiveTool(null)} onCreated={close} />}
       {activeTool === "ats" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <section role="dialog" aria-modal="true" aria-labelledby="dashboard-ats-title" className="relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-7">
+          <section role="dialog" aria-modal="true" aria-labelledby="dashboard-ats-title" className="relative max-h-[92dvh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl sm:p-7">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-sky-700"><ScanSearch className="h-4 w-4" /> Resume analysis</p>

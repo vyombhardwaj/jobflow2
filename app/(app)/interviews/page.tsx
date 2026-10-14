@@ -71,7 +71,7 @@ export default function InterviewsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1>Interviews</h1>
           <p className="text-neutral-500 mt-1">Schedule and track all your interviews.</p>
@@ -101,7 +101,7 @@ export default function InterviewsPage() {
                 {applications.map(a => <option key={a.id} value={a.id}>{a.company} — {a.role}</option>)}
               </select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium mb-1.5">Type</label>
                 <select className="input" value={form.type} onChange={e => setForm(p => ({ ...p, type: e.target.value }))}>
@@ -144,23 +144,23 @@ export default function InterviewsPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map(iv => (
-            <div key={iv.id} className="card flex items-start gap-4">
+            <div key={iv.id} className="card flex flex-col items-start gap-3 sm:flex-row sm:gap-4">
               <div className="mt-0.5">
                 <span className={cn("badge capitalize", TYPE_COLOR[iv.type] ?? "bg-neutral-100 text-neutral-600")}>{iv.type}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-medium">{iv.application.company}</p>
                 <p className="text-sm text-neutral-400">{iv.application.role}</p>
-                <p className="text-sm text-neutral-500 mt-1">{formatDate(iv.scheduledAt)}{iv.duration ? ` · ${iv.duration}min` : ""}</p>
-                {iv.notes && <p className="text-xs text-neutral-400 mt-1.5">{iv.notes}</p>}
+                <p className="mt-1 break-words text-sm text-neutral-500">{formatDate(iv.scheduledAt)}{iv.duration ? ` · ${iv.duration}min` : ""}</p>
+                {iv.notes && <p className="mt-1.5 break-words text-xs text-neutral-400">{iv.notes}</p>}
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex w-full items-center justify-end gap-3 border-t border-neutral-100 pt-3 sm:w-auto sm:shrink-0 sm:border-0 sm:pt-0">
                 {!iv.outcome ? (
                   <>
-                    <button onClick={() => setOutcome(iv.id, "passed")} className="text-neutral-300 hover:text-emerald-500" title="Mark passed">
+                    <button type="button" onClick={() => setOutcome(iv.id, "passed")} className="inline-flex min-h-11 min-w-11 items-center justify-center text-neutral-300 hover:text-emerald-500" title="Mark passed" aria-label="Mark interview passed">
                       <CheckCircle2 className="w-5 h-5" />
                     </button>
-                    <button onClick={() => setOutcome(iv.id, "failed")} className="text-neutral-300 hover:text-red-400" title="Mark failed">
+                    <button type="button" onClick={() => setOutcome(iv.id, "failed")} className="inline-flex min-h-11 min-w-11 items-center justify-center text-neutral-300 hover:text-red-400" title="Mark failed" aria-label="Mark interview failed">
                       <XCircle className="w-5 h-5" />
                     </button>
                   </>
@@ -170,7 +170,7 @@ export default function InterviewsPage() {
                     iv.outcome === "failed" ? "bg-red-50 text-red-500" : "bg-neutral-100 text-neutral-500"
                   )}>{iv.outcome}</span>
                 )}
-                <button onClick={() => remove(iv.id)} className="text-neutral-200 hover:text-red-400 ml-1">
+                <button type="button" onClick={() => remove(iv.id)} className="ml-1 inline-flex min-h-11 min-w-11 items-center justify-center text-neutral-200 hover:text-red-400" aria-label="Delete interview">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>

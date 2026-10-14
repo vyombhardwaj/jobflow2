@@ -79,12 +79,12 @@ export default function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1>Applications</h1>
           <p className="text-neutral-500 mt-1">Track every job you have applied to.</p>
         </div>
-        <div className="flex flex-wrap justify-end gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-end">
           <button className="btn-secondary" onClick={() => { setImporting(true); setAdding(false); }}>
             <Sparkles className="w-4 h-4" /> Create from description
           </button>
@@ -113,7 +113,7 @@ export default function ApplicationsPage() {
         <div className="card border-neutral-300">
           <h3 className="mb-4">New application</h3>
           <form onSubmit={addApp} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium mb-1.5">Company</label>
                 <input className="input" placeholder="e.g. Google" required
@@ -125,7 +125,7 @@ export default function ApplicationsPage() {
                   value={form.role} onChange={e => setForm(p => ({ ...p, role: e.target.value }))} />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
               <div>
                 <label className="block text-sm font-medium mb-1.5">Status</label>
                 <select className="input" value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))}>
@@ -145,7 +145,7 @@ export default function ApplicationsPage() {
                 </select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium mb-1.5">Location</label>
                 <input className="input" placeholder="e.g. London, UK"
@@ -157,7 +157,7 @@ export default function ApplicationsPage() {
                   value={form.salary} onChange={e => setForm(p => ({ ...p, salary: e.target.value }))} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium mb-1.5">Applied date</label>
                 <input className="input" type="date"
@@ -200,7 +200,7 @@ export default function ApplicationsPage() {
         <div className="space-y-2">
           {filtered.map(a => (
             <div key={a.id} className="card">
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap sm:gap-4">
                 <div className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-base font-bold text-neutral-600 shrink-0">
                   {a.company[0]}
                 </div>
@@ -211,34 +211,34 @@ export default function ApplicationsPage() {
                   </div>
                   <p className="text-sm text-neutral-400 truncate">{a.role}{a.location ? ` · ${a.location}` : ""}</p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex w-full items-center justify-end gap-2 border-t border-neutral-100 pt-2 sm:w-auto sm:shrink-0 sm:border-0 sm:pt-0">
                   {a.salary && <span className="text-xs text-neutral-400 hidden md:block">{a.salary}</span>}
                   <select
                     value={a.status}
                     onChange={e => updateStatus(a.id, e.target.value)}
-                    className={cn("text-xs font-medium px-2 py-1 rounded-lg border-0 cursor-pointer capitalize", STATUS_COLOR[a.status])}
+                    className={cn("min-h-11 max-w-32 text-xs font-medium px-2 py-1 rounded-lg border-0 cursor-pointer capitalize", STATUS_COLOR[a.status])}
                   >
                     {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                   {a.url && (
-                    <a href={a.url} target="_blank" rel="noopener noreferrer" className="text-neutral-300 hover:text-blue-400">
+                    <a href={a.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${a.company} job listing`} className="inline-flex min-h-11 min-w-11 items-center justify-center text-neutral-300 hover:text-blue-400">
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   )}
-                  <button onClick={() => setExpanded(expanded === a.id ? null : a.id)} className="text-neutral-300 hover:text-neutral-600">
+                  <button type="button" aria-label={`${expanded === a.id ? "Hide" : "Show"} details for ${a.company}`} onClick={() => setExpanded(expanded === a.id ? null : a.id)} className="inline-flex min-h-11 min-w-11 items-center justify-center text-neutral-300 hover:text-neutral-600">
                     {expanded === a.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </button>
-                  <button onClick={() => remove(a.id)} className="text-neutral-200 hover:text-red-400 transition-colors">
+                  <button type="button" aria-label={`Delete ${a.company} application`} onClick={() => remove(a.id)} className="inline-flex min-h-11 min-w-11 items-center justify-center text-neutral-200 transition-colors hover:text-red-400">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
               {expanded === a.id && (
-                <div className="mt-4 pt-4 border-t border-neutral-100 grid grid-cols-2 gap-3 text-sm">
+                <div className="mt-4 grid grid-cols-1 gap-3 border-t border-neutral-100 pt-4 text-sm sm:grid-cols-2">
                   {a.appliedDate && <div><span className="text-neutral-400">Applied: </span>{formatDate(a.appliedDate)}</div>}
                   {a.deadline    && <div><span className="text-neutral-400">Deadline: </span>{formatDate(a.deadline)}</div>}
                   {a.jobType     && <div><span className="text-neutral-400">Type: </span><span className="capitalize">{a.jobType}</span></div>}
-                  {a.description && <div className="col-span-2 text-neutral-500">{a.description}</div>}
+                  {a.description && <div className="break-words text-neutral-500 sm:col-span-2">{a.description}</div>}
                 </div>
               )}
             </div>

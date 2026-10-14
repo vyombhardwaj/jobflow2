@@ -25,6 +25,7 @@ export const authOptions: NextAuthOptions = {
         const password = credentials.password;
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
         if (password.length < 8 || password.length > 128) return null;
+        if (email === "demo@example.com" && (process.env.NODE_ENV === "production" || process.env.ALLOW_DEMO_LOGIN !== "true")) return null;
 
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (!existingUser?.passwordHash || !existingUser.emailVerified || !(await bcrypt.compare(password, existingUser.passwordHash))) return null;

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateWithGemini, isGeminiConfigured } from "@/lib/ai";
+import { generateWithGemini, getGeminiServiceFailure, isGeminiConfigured } from "@/lib/ai";
 
 function fallbackPrepGuide(app: { company: string; role: string; description?: string | null }, focusArea: string, extraContext: string) {
   const company = app.company || "the company";
@@ -47,6 +47,10 @@ Format clearly with sections and bullet points. Be specific to the role and comp
     return NextResponse.json({ prep });
   } catch (error) {
     console.error("Interview prep generation failed", error);
-    return NextResponse.json({ error: "Failed to generate interview prep. Please check your AI configuration." }, { status: 500 });
+    const serviceFailure = getGeminiServiceFailure(error);
+    return NextResponse.json(
+      { error: serviceFailure?.message ?? "Failed to generate interview prep. Please check your AI configuration." },
+      { status: serviceFailure?.status ?? 500 },
+    );
   }
 }

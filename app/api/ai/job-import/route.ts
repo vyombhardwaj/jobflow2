@@ -3,7 +3,7 @@ import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { generateWithGemini, isGeminiConfigured } from "@/lib/ai";
+import { generateWithGemini, getGeminiServiceFailure, isGeminiConfigured } from "@/lib/ai";
 
 export const runtime = "nodejs";
 
@@ -150,6 +150,10 @@ ${description}`;
     });
   } catch (error) {
     console.error("AI job import extraction failed", error);
-    return NextResponse.json({ error: "Unable to extract job details. Please try again." }, { status: 500 });
+    const serviceFailure = getGeminiServiceFailure(error);
+    return NextResponse.json(
+      { error: serviceFailure?.message ?? "Unable to extract job details. Please try again." },
+      { status: serviceFailure?.status ?? 500 },
+    );
   }
 }

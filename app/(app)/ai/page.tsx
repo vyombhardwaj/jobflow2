@@ -79,14 +79,14 @@ export default function AiPage() {
         <p className="text-neutral-500 mt-1">AI uses your configured Google Gemini API key to help with job applications. Check your resume, import job details, generate cover letters, and prepare for interviews.</p>
       </div>
 
-      <div className="flex gap-1 bg-neutral-100 rounded-xl p-1 w-fit">
+      <div className="grid w-full grid-cols-1 gap-1 rounded-xl bg-neutral-100 p-1 sm:inline-grid sm:w-fit sm:grid-cols-3">
         {([
           { key: "coverletter",  label: "Cover Letter" },
           { key: "interviewprep", label: "Interview Prep" },
           { key: "ats", label: "Resume ATS check" },
         ] as const).map(({ key, label }) => (
           <button key={key} onClick={() => setTab(key)}
-            className={cn("px-4 py-1.5 rounded-lg text-sm font-medium transition-all",
+            className={cn("min-h-11 rounded-lg px-4 py-1.5 text-sm font-medium transition-all",
               tab === key ? "bg-white shadow-sm text-neutral-900" : "text-neutral-500 hover:text-neutral-700"
             )}>{label}</button>
         ))}

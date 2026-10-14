@@ -78,7 +78,7 @@ export default async function StatsPage() {
                 .sort((a, b) => b[1] - a[1])
                 .map(([status, count]) => (
                   <div key={status} className="flex items-center gap-3">
-                    <span className={cn("badge capitalize text-xs w-24 text-center", STATUS_COLOR[status])}>{status}</span>
+                    <span className={cn("badge w-24 shrink-0 text-center text-xs capitalize", STATUS_COLOR[status])}>{status}</span>
                     <div className="flex-1 bg-neutral-100 rounded-full h-2">
                       <div className="h-2 rounded-full bg-neutral-900" style={{ width: `${Math.round((count / total) * 100)}%` }} />
                     </div>
@@ -99,7 +99,7 @@ export default async function StatsPage() {
                 .sort((a, b) => b[1] - a[1])
                 .map(([type, count]) => (
                   <div key={type} className="flex items-center gap-3">
-                    <span className="text-sm text-neutral-600 capitalize w-24">{type}</span>
+                    <span className="w-24 shrink-0 break-words text-sm capitalize text-neutral-600">{type}</span>
                     <div className="flex-1 bg-neutral-100 rounded-full h-2">
                       <div className="h-2 rounded-full bg-violet-400" style={{ width: `${Math.round((count / total) * 100)}%` }} />
                     </div>

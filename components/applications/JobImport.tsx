@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertCircle, BriefcaseBusiness, CalendarClock, CheckCircle2, Loader2, Sparkles, UploadCloud, UserRound } from "lucide-react";
 
 type Contact = { name: string; title: string | null; email: string | null; linkedin: string | null; notes: string | null };
@@ -36,6 +36,19 @@ export function JobImport({ onClose, onCreated }: Props) {
   const [error, setError] = useState("");
   const [includeInterview, setIncludeInterview] = useState(true);
   const [includedContacts, setIncludedContacts] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    const previousOverflow = window.document.body.style.overflow;
+    window.document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !saving) onClose();
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [onClose, saving]);
 
   async function extract(event: React.FormEvent) {
     event.preventDefault();
@@ -115,8 +128,8 @@ export function JobImport({ onClose, onCreated }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <section role="dialog" aria-modal="true" aria-labelledby="job-import-title" className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-7">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4">
+      <section role="dialog" aria-modal="true" aria-labelledby="job-import-title" className="max-h-[92dvh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl sm:p-7">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="mb-2 flex items-center gap-2 text-violet-700"><Sparkles className="h-4 w-4" /><span className="text-xs font-semibold uppercase tracking-wide">AI job import</span></div>
